@@ -1,4 +1,4 @@
-import std/[strutils, strscans]
+import std/[sequtils, strutils, strscans]
 from std/sugar import `=>`
 
 const
@@ -20,23 +20,40 @@ proc number(s: string, start: int, fn: proc (n: int)): int =
   if result != 0:
     fn(n)
 
-proc part1(data: string): int =
+proc main(data: string, part2 = false): int =
+  var cardCounts =
+    if part2:
+      repeat(1, Natural(countLines(data) + 1))
+    else:
+      newSeq[int]()
+
   for line in data.splitLines(false):
+
     var
       idx = 0
+      id = 0
       winningNums: set[int8]
       myNums: set[int8]
 
     assert scanp(line, idx,
-                 "Card", +' ', +`Digits`, ':', +' ',
+                 "Card", +' ', (number($input, $index, (n: int) => (id = n))), ':', +' ',
                  (number($input, $index, (n: int) => winningNums.incl(int8(n))) ^+ (+' ')),
                  *' ', '|', +' ',
                  (number($input, $index, (n: int) => myNums.incl(int8(n))) ^+ (+' ')))
+
     let myWinningNums = winningNums * myNums
-    if myWinningNums.card != 0:
-      result += 1 shl (myWinningNums.card - 1)
+
+    if not part2:
+      if myWinningNums.card != 0:
+        result += 1 shl (myWinningNums.card - 1)
+    else:
+      result += cardCounts[id]
+
+      for i in countup(1, myWinningNums.card):
+        cardCounts[id + i] += cardCounts[id]
 
 when isMainModule:
   var data = input
   stripLineEnd(data)
-  echo "Part 1: ", part1(data)
+  echo "Part 1: ", main(data)
+  echo "Part 2: ", main(data, true)
