@@ -5,7 +5,7 @@ author        = "Ben Frengley"
 description   = "Advent of Code 2023"
 license       = "MIT"
 srcDir        = "src"
-bin           = @["day01", "day02", "day03"]
+bin           = @["day01", "day02", "day03", "day04"]
 
 
 # Dependencies
